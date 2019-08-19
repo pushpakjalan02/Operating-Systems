@@ -15,7 +15,7 @@ int main(int argc, char* argv[]){
 		else{
 			wait(&stat);
 			printf("\n\nInside Child Process: \nPID: %d, PPID: %d\n", getpid(), getppid());
-			printf("Exit Status of Grandchild: %d\n", WEXITSTATUS(stat));
+			printf("Exit Status of Grandchild: %d\n", WIFEXITED(stat));
 			printf("Overlaying HelloWorld\n");
 			char *argv[] = {"./HelloWorld", NULL};
 			execv(argv[0], argv);
@@ -25,7 +25,7 @@ int main(int argc, char* argv[]){
 	else{
 		wait(&stat);
 		printf("\n\nInside Parent:\nProcess Id: \nChild Process Id:\nGrandChild Process Id: \n" );
-		printf("Exit Status of Child: %d\n", WEXITSTATUS(stat));
+		printf("Exit Status of Child: %d\n", WIFEXITED(stat));
 		exit(0);
 	}
 }

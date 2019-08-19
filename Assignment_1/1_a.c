@@ -7,9 +7,16 @@
 int main(int argc, char* argv[]){
 	int pid;
 	int stat;
+	int count = 1;
 	if((pid = fork()) == 0){		
+		count++;		
 		if((pid = fork()) == 0){
+			count++;			
 			printf("\n\nInside Grandchild Process: \nRoll No: CSB17002\n");
+			FILE *fp = fopen("1_a.txt", "w");		
+			fprintf(fp, "GrandChild PID: %d\n", getpid());	
+			fprintf(fp, "\nCount of Processes: %d\n", count);			
+			fclose(fp);			
 			exit(1);
 		}
 		else{
@@ -21,8 +28,13 @@ int main(int argc, char* argv[]){
 	}
 	else{
 		wait(&stat);
-		printf("\n\nInside Parent:\nProcess Id: \nChild Process Id:\nGrandChild Process Id: \n" );
+		char buffer[100];
+		FILE *fp = fopen("1_a.txt", "r");			
+		printf("\n\nInside Parent:\nProcess Id: %d\nChild Process Id: %d\n", getpid(), pid );
+		while(fgets(buffer, 100, fp) != NULL)
+			printf("%s", buffer);	
 		printf("Exit Status of Child: %d\n", WEXITSTATUS(stat));
+		fclose(fp);
 		exit(0);
 	}
 }
