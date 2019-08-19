@@ -8,13 +8,22 @@
 int main(int argc, char* argv[]){
 	int pid;
 	int stat;
-	int count;
-	struct utmp user;
+	int count = 1;
 	if((pid = fork()) == 0){		
 		count++;		
 		if((pid = fork()) == 0){
 			count++;			
+			struct utmp *user;
 			printf("\n\nInside Grandchild Process: \nRoll No: CSB17002\n");
+			setutent();
+			user = getutent();
+			while(user){
+				if(user -> ut_type == USER_PROCESS){
+					printf("Logged in as: %s", user -> ut_user);
+				}
+				user = getutent();
+			}
+			endutent();
 			FILE *fp = fopen("1_a.txt", "w");		
 			fprintf(fp, "GrandChild PID: %d\n", getpid());	
 			fprintf(fp, "\nCount of Processes: %d\n", count);			
