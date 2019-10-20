@@ -4,18 +4,20 @@
 #include<unistd.h>
 #include<stdio.h>
 #include<string.h>
+#include<signal.h>
+#include<stdlib.h>
 
 int file_descriptor;
 
 void signal_handler(int sig){
 	close(file_descriptor);
-	return;
+	exit(0);
 }
 
 int main(int argc, char* argv[]){
 	char *pathname = "mynode";
 
-	file_descriptor = open(pathname, O_RDWR);
+	file_descriptor = open(pathname, O_RDONLY | O_NONBLOCK);
 
 	signal(SIGINT, signal_handler);
 
@@ -27,10 +29,17 @@ int main(int argc, char* argv[]){
 
 	fcntl(file_descriptor, F_SETLK, &lock);
 
+	char buffer[100];
+
+	sleep(40);
+
 	while(1){
-		char buffer[100];
-		read(file_descriptor, (void*)buffer, (size_t)sizeof(buffer));
-		printf("%s\n\nPress Enter for Next\n",buffer);
-		scanf("%*[\n]");
+		memset(buffer, 0x0, sizeof(buffer));
+		int no_bytes = read(file_descriptor, (void*)buffer, (size_t)sizeof(buffer));
+		int current = 0;
+		while(current < no_bytes){
+			printf("%s", &buffer[current]);
+			current += strlen(&buffer[current]) + 2;
+		}
 	}
 }

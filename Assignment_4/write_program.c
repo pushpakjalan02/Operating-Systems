@@ -5,12 +5,13 @@
 #include<sys/stat.h>
 #include<signal.h>
 #include<string.h>
+#include<stdlib.h>
 
 int file_descriptor;
 
 void handler_function(int sig){
 	close(file_descriptor);
-	return;
+	exit(0);
 }
 
 int main(int argc, char* argv[]){
