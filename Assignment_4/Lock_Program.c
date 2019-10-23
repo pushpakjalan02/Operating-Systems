@@ -15,7 +15,7 @@ void signal_handler(int sig){
 }
 
 int main(int argc, char* argv[]){
-	char *pathname = "mynode";
+	char *pathname = "mnode";
 
 	file_descriptor = open(pathname, O_RDONLY | O_NONBLOCK);
 
@@ -25,13 +25,11 @@ int main(int argc, char* argv[]){
 	lock.l_type = F_RDLCK;
 	lock.l_whence = SEEK_SET;
 	lock.l_start = 0;
-	lock.l_len = 0;
+	lock.l_len = 9;
 
-	fcntl(file_descriptor, F_SETLK, &lock);
+	int a = fcntl(file_descriptor, F_SETLK, &lock);
 
 	char buffer[100];
-
-	sleep(40);
 
 	while(1){
 		memset(buffer, 0x0, sizeof(buffer));

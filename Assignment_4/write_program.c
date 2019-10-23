@@ -17,7 +17,7 @@ void handler_function(int sig){
 int main(int argc, char* argv[]){
 	signal(SIGINT, handler_function);
 
-	char *pathname = "mynode";
+	char *pathname = "mnode";
 	char buffer[1000];
 
 	mknod(pathname, 0777|S_IFIFO, 0);

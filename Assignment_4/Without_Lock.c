@@ -15,7 +15,7 @@ void signal_handler(int sig){
 }
 
 int main(int argc, char* argv[]){
-	char *pathname = "mynode";
+	char *pathname = "mnode";
 
 	file_descriptor = open(pathname, O_RDWR);
 
