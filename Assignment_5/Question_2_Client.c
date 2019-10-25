@@ -41,9 +41,13 @@ int main(int argc, char *argv[]){
 
 	send(sock, argv[3], strlen(argv[3]) + 1, 0);
 
+	memset(buffer, 0x0, sizeof(buffer));
 	recv(sock, buffer, sizeof(buffer), 0);
+	printf("IP Address: %s\n", buffer);
 
-	printf("Reversed String: %s\n", buffer);
+	memset(buffer, 0x0, sizeof(buffer));
+	recv(sock, buffer, sizeof(buffer), 0);
+	printf("String: %s\n", buffer);
 
 	close(sock);
 }

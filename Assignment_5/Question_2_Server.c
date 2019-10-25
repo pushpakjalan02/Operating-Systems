@@ -7,10 +7,32 @@
 #include<string.h>
 #include<arpa/inet.h>
 #include<stdlib.h>
-#include <pthread.h>
+#include<pthread.h>
 
 #define MAX_CLIENT 5
 #define MAX_MSG_LEN 1000
+
+void* process_connection(void* new_serv_sock){
+	int sock = *((int*)new_serv_sock);	
+
+	struct sockaddr_in addr;
+	socklen_t addr_size = sizeof(struct sockaddr_in);
+	getpeername(sock, (struct sockaddr *) &addr, &addr_size);
+
+	char buffer[1000];
+	char client_addr[100];
+	memset(buffer, 0x0, sizeof(buffer));		
+	memset(client_addr, 0x0, sizeof(client_addr));	
+	strcpy(client_addr, inet_ntoa(addr.sin_addr));
+	
+	recv(sock, (void*)buffer, (size_t)sizeof(buffer), 0);	
+	
+	send(sock, (const void*)client_addr, (size_t)strlen(client_addr)+1, 0);	
+	sleep(2);
+	send(sock, (const void*)buffer, (size_t)strlen(buffer)+1, 0);
+
+	close(sock);
+}
 
 int main(int argc, char* argv[]){
 
@@ -48,22 +70,10 @@ int main(int argc, char* argv[]){
 	while(1){
 		client_addr_len = sizeof(client_addr);
 		new_serv_sock = accept(serv_sock, (struct sockaddr *) &client_addr, &client_addr_len);
-			
-		pthread_t thread_id;
-		pthread_create(&thread_id, NULL, process, (void*)&new_serv_sock);
 
-		close(new_serv_sock);
+		pthread_t thread_id;
+		pthread_create(&thread_id, NULL, process_connection, (void*)&new_serv_sock);
 	}
 }
 
-void* process_connection(void* new_serv_sock){
-	struct sockaddr_in addr;
-	socklen_t addr_size = sizeof(struct sockaddr_in);
-	getpeername(*((int*)new_serv_sock), (struct sockaddr *) &addr, &addr_size);
-	char* buffer[100];
-	memset(buffer, 0x0, sizeof(buffer));	
-	recv(*((int*)new_serv_sock), buffer, sizeof(buffer));
-	send(*((int*)new_serv_sock), inet_ntoa(addr.sin_addr), sizeof(inet_ntoa(addr.sin_addr)));
-	send(*((int*)new_serv_sock), buffer, sizeof(buffer));
 
-}
