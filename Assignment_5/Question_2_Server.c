@@ -7,6 +7,7 @@
 #include<string.h>
 #include<arpa/inet.h>
 #include<stdlib.h>
+#include <pthread.h>
 
 #define MAX_CLIENT 5
 #define MAX_MSG_LEN 1000
@@ -49,8 +50,20 @@ int main(int argc, char* argv[]){
 		new_serv_sock = accept(serv_sock, (struct sockaddr *) &client_addr, &client_addr_len);
 			
 		pthread_t thread_id;
-		pthread_create(&thread_id, NULL, process, client_addr);
+		pthread_create(&thread_id, NULL, process, (void*)&new_serv_sock);
 
 		close(new_serv_sock);
 	}
+}
+
+void* process_connection(void* new_serv_sock){
+	struct sockaddr_in addr;
+	socklen_t addr_size = sizeof(struct sockaddr_in);
+	getpeername(*((int*)new_serv_sock), (struct sockaddr *) &addr, &addr_size);
+	char* buffer[100];
+	memset(buffer, 0x0, sizeof(buffer));	
+	recv(*((int*)new_serv_sock), buffer, sizeof(buffer));
+	send(*((int*)new_serv_sock), inet_ntoa(addr.sin_addr), sizeof(inet_ntoa(addr.sin_addr)));
+	send(*((int*)new_serv_sock), buffer, sizeof(buffer));
+
 }
