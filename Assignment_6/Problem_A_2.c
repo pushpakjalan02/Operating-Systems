@@ -1,6 +1,4 @@
 #include<stdio.h>
-#include<sys/types.h>
-#include<unistd.h>
 #include<sys/ipc.h>
 #include<sys/shm.h>
 
@@ -17,14 +15,9 @@ int main(){
 	shm_id = shmget(key, 100, 0777 | IPC_CREAT);
 	sh_mem = shmat(shm_id, NULL, 0);
 	
-	printf("Hello, World!, My PID is: %d\n", getpid());
-	sh_mem -> pid = getpid();
+	printf("Process ID of Sibling: %d\n", sh_mem -> pid);
 
 	shmdt(sh_mem);
-
-	sleep(10);
-
-	shmctl(shm_id, IPC_RMID, NULL);
 
 	printf("Terminated\n");
 }
