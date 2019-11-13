@@ -3,6 +3,7 @@
 #include<sys/types.h>
 #include<sys/ipc.h>
 #include<sys/sem.h>
+#include<unistd.h>
 
 union semun {
 	int val;
@@ -33,9 +34,9 @@ void wait_operation(int sem_set_identifier){
 void signal_operation(int sem_set_identifier){
 	struct sembuf sops[1];
 
-	sops[1].sem_num = 0;
-	sops[1].sem_op = -1;
-	sops[1].sem_flg = 0;
+	sops[0].sem_num = 0;
+	sops[0].sem_op = -1;
+	sops[0].sem_flg = 0;
 
 	if(semop(sem_set_identifier, sops, 1) == -1){
 		perror("semop() error");
@@ -61,7 +62,13 @@ int main(int argc, char* argv[]){
 		printf("Enter any character to continue\n");
 		char ch = getchar();
 		
+		if(count > 1)
+			signal_operation(sem_set_identifier);
+
 		wait_operation(sem_set_identifier);
+
+		if(count == 1)
+			sleep(4);
 
 		FILE *fp = fopen("file.txt","r");
 		char buffer[1000];
@@ -69,6 +76,5 @@ int main(int argc, char* argv[]){
 		printf("%d. %s\n", count, buffer);
 		count++;
 
-		signal_operation(sem_set_identifier);
 	}	
 }
