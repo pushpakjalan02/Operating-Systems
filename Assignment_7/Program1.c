@@ -4,6 +4,7 @@
 #include<sys/ipc.h>
 #include<sys/sem.h>
 #include<unistd.h>
+#include<signal.h>
 
 union semun {
 	int val;
@@ -46,10 +47,31 @@ void signal_operation(int sem_set_identifier){
 	return;
 }
 
+void handler_function(int signal){
+	key_t key;
+	int sem_set_identifier;
+	int pid;
+
+	key = ftok("/home/pushpakjalan/Desktop/OS/Assignment_7/file.txt", 1);
+	sem_set_identifier = semget(key, 1, 0666 | IPC_CREAT);
+
+	signal_operation(sem_set_identifier);
+	wait_operation(sem_set_identifier);
+
+	printf("Enter Process ID\n");
+	scanf("%d", &pid);	
+	kill(pid, SIGINT);
+
+	semctl(sem_set_identifier, 0, IPC_RMID);
+
+	exit(0);
+}
 int main(int argc, char* argv[]){
 	key_t key;
 	int sem_set_identifier;
 	union semun sem_ctl_4;
+
+	signal(SIGINT, handler_function);
 
 	key = ftok("/home/pushpakjalan/Desktop/OS/Assignment_7/file.txt", 1);
 	sem_set_identifier = semget(key, 1, 0666 | IPC_CREAT);
@@ -76,5 +98,6 @@ int main(int argc, char* argv[]){
 		printf("%d. %s\n", count, buffer);
 		count++;
 
-	}	
+	}
+	
 }

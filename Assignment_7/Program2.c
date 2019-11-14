@@ -50,6 +50,8 @@ int main(int argc, char* argv[]){
 	key_t key;
 	int sem_set_identifier;
 	int count = 1;
+	
+	printf("My PID is: %d\n", getpid());
 
 	key = ftok("/home/pushpakjalan/Desktop/OS/Assignment_7/file.txt", 1);
 	sem_set_identifier = semget(key, 1, 0666 | 0);
